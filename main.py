@@ -47,14 +47,14 @@ def solve_tree(inputpath, exportpath=None):
     start = time.perf_counter()
     graph = filecontroller.json_to_graph(inputpath)
     end = time.perf_counter()
-    print("[DEBUG] Imported data in", end - start, " s")
+    print("[DEBUG] Imported", len(graph.nodes), "Nodes and", len(graph.edges), "Edges in", (end - start)*1000, "ms")
 
     # Minimize the graph object
     print("[DEBUG] Minimizing graph...")
     start = time.perf_counter()
     logiccontroller.minimize(graph)
     end = time.perf_counter()
-    print("[DEBUG] Graph minimized in", end - start, "ms")
+    print("[DEBUG] Graph minimized in", (end - start)*1000, "ms")
 
     # If an export path was given, export the resulting graph
     if exportpath is not None:

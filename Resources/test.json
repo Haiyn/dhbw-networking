@@ -40,73 +40,73 @@
   ],
   "edges": [
     {
-      "start": 0,
-      "end": 1,
+      "source": 0,
+      "destination": 1,
       "weight": 4
     },
     {
-      "start": 0,
-      "end": 7,
+      "source": 0,
+      "destination": 7,
       "weight": 8
     },
     {
-      "start": 1,
-      "end": 2,
+      "source": 1,
+      "destination": 2,
       "weight": 8
     },
     {
-      "start": 1,
-      "end": 7,
+      "source": 1,
+      "destination": 7,
       "weight": 11
     },
     {
-      "start": 2,
-      "end": 8,
+      "source": 2,
+      "destination": 8,
       "weight": 2
     },
     {
-      "start": 2,
-      "end": 3,
+      "source": 2,
+      "destination": 3,
       "weight": 7
     },
     {
-      "start": 2,
-      "end": 5,
+      "source": 2,
+      "destination": 5,
       "weight": 4
     },
     {
-      "start": 3,
-      "end": 4,
+      "source": 3,
+      "destination": 4,
       "weight":9
     },
     {
-      "start": 3,
-      "end": 5,
+      "source": 3,
+      "destination": 5,
       "weight": 14
     },
     {
-      "start": 4,
-      "end": 5,
+      "source": 4,
+      "destination": 5,
       "weight": 10
     },
     {
-      "start": 5,
-      "end": 6,
+      "source": 5,
+      "destination": 6,
       "weight": 2
     },
     {
-      "start": 6,
-      "end": 7,
+      "source": 6,
+      "destination": 7,
       "weight": 1
     },
     {
-      "start": 6,
-      "end": 8,
+      "source": 6,
+      "destination": 8,
       "weight": 6
     },
     {
-      "start": 7,
-      "end": 8,
+      "source": 7,
+      "destination": 8,
       "weight": 7
     }
   ]
