@@ -1,6 +1,5 @@
 import json
 import os
-
 from Models.Edge import Edge
 from Models.Graph import Graph
 from Models.Node import Node
@@ -8,7 +7,11 @@ from Models.Node import Node
 
 class FileController:
 
-    # CHECKS IF GIVEN PATH IS VALID
+    # IS_PATH_VALID
+    # Checks if the passed path is valid
+    #
+    # @params: String path
+    # @return: True if valid, False if invalid
     @classmethod
     def is_path_valid(cls, path):
         # if path is empty, it is not a valid path
@@ -18,19 +21,26 @@ class FileController:
         # check if the file exists and that it is accessible
         try:
             if os.path.exists(path):
-                open(path, 'r')
+                open(path, 'r')  # opening with write deletes the file contents!
                 return True
             else:
                 return False
         except OSError:
+            # Cannot open the file
+            print('[ERROR] The path \'', path, '\' is not a valid path or the file does not exist.')
             return False
         except TypeError:
+            # Path is not of type string or os.path, should never happen
             print("[FATAL] Path is in an invalid type!")
             return False
 
-    # DECODES A JSON INTO A GRAPH OBJECT
+    # IMPORT_JSON_TO_GRAPH
+    # Decodes a json file into a Models/Graph object
+    #
+    # @params: String inputpath
+    # @return: Graph object
     @classmethod
-    def json_to_graph(cls, inputpath):
+    def import_json_to_graph(cls, inputpath):
         with open(inputpath, 'r') as contents:
             try:
                 # Load the JSON into a dictionary
@@ -48,12 +58,32 @@ class FileController:
                 return Graph(node_objects, edge_objects)
 
             except json.decoder.JSONDecodeError:
-                print("[FATAL] The contents of \'", inputpath, "\' are not a well formed JSON! Please see data "
+                # Decoder could not decode the file contents
+                print("[ERROR] The contents of \'", inputpath, "\' are not a well formed JSON! Please see data "
                                                                "specifications in the README for more information.")
                 exit(2)
-        # Map the file contents to a hashmap
 
-    # DUMPS A GRAPH OBJECT AS A JSON FILE
+    # EXPORT_GRAPH_TO_JSON
+    # Writes a Models/Graph object to a json file
+    #
+    # @params: Models/Graph graph, String exportpath
+    # @return: True if successful, False if invalid path or writing failed
     @classmethod
-    def graph_to_json(cls, graph, exportpath):
-        print("graph to json")
+    def export_graph_to_json(cls, graph, exportpath):
+        if cls.is_path_valid(exportpath):
+            # Write privileges cannot be checked beforehand so possible errors need to be caught
+            try:
+                with open(exportpath, 'w') as file:
+                    # Dump the contents of the graph object into the file
+                    json.dump(graph, file, default=lambda o: o.__dict__,
+                              sort_keys=False, indent=4)
+                return True
+            except IOError:
+                print('[ERROR] Could not write to file', exportpath, ". Does the program have write privileges in "
+                                                                     "this file?")
+                return False
+
+        else:
+            print('[ERROR] The path \'', exportpath, '\' is not a valid path or the file does not exist. The file was '
+                                                     'not exported.')
+            return False
