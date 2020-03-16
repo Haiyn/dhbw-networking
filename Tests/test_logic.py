@@ -1,8 +1,6 @@
 import unittest
 from Controllers.LogicController import LogicController
 
-# Naming convention for unit test methoods:
-# test_Should_ExpectedBehavior_When_StateUnderTest
 from Models.Edge import Edge
 from Models.Graph import Graph
 from Models.Node import Node
@@ -10,13 +8,15 @@ from Models.Node import Node
 logiccontroller = LogicController()
 
 
+# Naming convention for unit test methoods:
+# test_Should_ExpectedBehavior_When_StateUnderTest
 class LogicTest(unittest.TestCase):
     # SOLVE_GRAPH
     def test_Should_ReturnMinimalJson_When_PassedTestJson(self):
         # Required variables
-        importpath = '../Resources/test.json'
-        exportpath = '../Resources/export.json'
-        minimalpath = '../Resources/minimal.json'
+        importpath = './Resources/test.json'
+        exportpath = './Resources/export.json'
+        minimalpath = './Resources/minimal.json'
 
         # Solve the graph from test.json and save to export.json
         logiccontroller.solve_graph(importpath, exportpath)
@@ -29,7 +29,7 @@ class LogicTest(unittest.TestCase):
         expected = file.read()
         file.close()
 
-        self.assertEqual(expected, actual)
+        self.assertCountEqual(expected, actual)
 
     # MINIMIZE_GRAPH
     def test_Should_ReturnMinimalGraph_When_PassedTestGraph(self):
@@ -41,7 +41,16 @@ class LogicTest(unittest.TestCase):
 
         actual = logiccontroller.minimize_graph(uminimized_graph)
 
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual.nodes - 1, actual.edges)
+        # Assert that both arrays are the same length
+        self.assertCountEqual(actual.nodes, expected.nodes)
+        self.assertCountEqual(actual.edges, expected.edges)
+
+        # Assert that all objects in actual also are in expected
+        for node in actual.nodes:
+            self.assertIn(node, expected.nodes)
+        for edge in actual.edges:
+            self.assertIn(edge, expected.edges)
 
     # FIND_MINIMAL_WEIGHT_EDGE
     def test_Should_ReturnMinimalWeightEdge_When_PassedEdgeArrayWithUniqueWeights(self):

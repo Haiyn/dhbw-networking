@@ -1,83 +1,64 @@
 {
-  "nodes":
-  [
-    {
-      "id": 0,
-      "name": "A"
-    },
-    {
-      "id": 1,
-      "name": "B"
-    },
-    {
-      "id": 2,
-      "name": "C"
-    },
-    {
-      "id": 3,
-      "name": "D"
-    },
-    {
-      "id": 4,
-      "name": "E"
-    },
-    {
-      "id": 5,
-      "name": "F"
-    },
-    {
-      "id": 6,
-      "name": "G"
-    },
-    {
-      "id": 7,
-      "name": "H"
-    },
-    {
-      "id": 8,
-      "name": "I"
-    }
-  ],
-  "edges": [
-    {
-      "source": 0,
-      "destination": 1,
-      "weight": 4
-    },
-    {
-      "source": 0,
-      "destination": 7,
-      "weight": 8
-    },
-    {
-      "source": 2,
-      "destination": 8,
-      "weight": 2
-    },
-    {
-      "source": 2,
-      "destination": 3,
-      "weight": 7
-    },
-    {
-      "source": 2,
-      "destination": 5,
-      "weight": 4
-    },
-    {
-      "source": 3,
-      "destination": 4,
-      "weight":9
-    },
-    {
-      "source": 5,
-      "destination": 6,
-      "weight": 2
-    },
-    {
-      "source": 6,
-      "destination": 7,
-      "weight": 1
-    }
-  ]
+    "nodes": [
+        {
+            "node_id": 0,
+            "name": "A"
+        },
+        {
+            "node_id": 1,
+            "name": "B"
+        },
+        {
+            "node_id": 2,
+            "name": "C"
+        },
+        {
+            "node_id": 3,
+            "name": "D"
+        },
+        {
+            "node_id": 4,
+            "name": "E"
+        },
+        {
+            "node_id": 5,
+            "name": "F"
+        },
+        {
+            "node_id": 6,
+            "name": "G"
+        }
+    ],
+    "edges": [
+        {
+            "source": 0,
+            "destination": 1,
+            "weight": 2
+        },
+        {
+            "source": 1,
+            "destination": 2,
+            "weight": 1
+        },
+        {
+            "source": 1,
+            "destination": 3,
+            "weight": 1
+        },
+        {
+            "source": 3,
+            "destination": 4,
+            "weight": 1
+        },
+        {
+            "source": 4,
+            "destination": 5,
+            "weight": 1
+        },
+        {
+            "source": 5,
+            "destination": 6,
+            "weight": 1
+        }
+    ]
 }

@@ -21,7 +21,8 @@ class FileController:
         # check if the file exists and that it is accessible
         try:
             if os.path.exists(path):
-                open(path, 'r')  # opening with write deletes the file contents!
+                file = open(path, 'r')  # opening with write deletes the file contents!
+                file.close()
                 return True
             else:
                 return False
@@ -49,10 +50,19 @@ class FileController:
                 # Create arrays with node and edge object values
                 node_objects = []
                 edge_objects = []
-                for node in graph_dict["nodes"]:
-                    node_objects.append(Node(node["id"], node["name"]))
+
                 for edge in graph_dict["edges"]:
                     edge_objects.append(Edge(edge["source"], edge["destination"], edge["weight"]))
+                for node in graph_dict["nodes"]:
+                    new_node = Node(node["node_id"], node["name"], [])
+
+                    for edge in edge_objects:
+                        if edge.source == new_node.node_id:
+                            new_node.add_edge(Edge(edge.source, edge.destination, edge.weight))
+                        elif edge.destination == new_node.node_id:
+                            new_node.add_edge(Edge(edge.destination, edge.source, edge.weight))
+
+                    node_objects.append(new_node)
 
                 # Put the node and edge arrays in the Graph object and return it
                 return Graph(node_objects, edge_objects)
@@ -77,6 +87,7 @@ class FileController:
                     # Dump the contents of the graph object into the file
                     json.dump(graph, file, default=lambda o: o.__dict__,
                               sort_keys=False, indent=4)
+                file.close()
                 return True
             except IOError:
                 print('[ERROR] Could not write to file', exportpath, ". Does the program have write privileges in "
