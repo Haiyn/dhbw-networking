@@ -1,4 +1,5 @@
 import heapq
+import math
 import sys
 import logging
 import time
@@ -9,39 +10,6 @@ from Models.Graph import Graph
 
 
 class LogicController:
-
-    # SOLVE_GRAPH
-    # Imports a given file and solves it
-    #
-    # @params: String importpath, String exportpath
-    # @return: None
-    @classmethod
-    def solve_graph(cls, importpath, exportpath=None):
-        filecontroller = FileController()
-
-        # If importpath is not valid, exit
-        if not filecontroller.is_path_valid(importpath):
-            exit(2)
-
-        # Deserialize file contents into Models/Graph object
-        logging.info('Importing data from %s...', importpath)
-        graph = filecontroller.import_json_to_graph(importpath)
-        logging.info('Imported %s Nodes and %s Edges', len(graph.nodes), len(graph.edges))
-
-        # Minimize the graph object
-        logging.info('Minimizing graph...')
-        start = time.perf_counter()
-        minimized_graph = cls.minimize_graph(graph)
-        end = time.perf_counter()
-        logging.info('Graph minimized in %s ms', (end - start) * 1000)
-
-        # If an export path was given, export the resulting graph
-        if exportpath is not None:
-            logging.info('Exporting graph to %s...', exportpath)
-            if filecontroller.export_graph_to_json(minimized_graph, exportpath):
-                logging.info('Successfully exported graph to %s', exportpath)
-            else:
-                exit(2)
 
     # MINIMIZE_GRAPH
     # Minimizes the passed graph with prims algorithm
