@@ -40,13 +40,13 @@ def main():
     args = parser.parse_args()
 
     # Handle the log level
-    logging.basicConfig(format='[%(levelname)s] - %(message)s', level=args.loglevel)
+    logging.basicConfig(format='[%(levelname)s] %(message)s', level=args.loglevel)
     if args.loglevel == logging.DEBUG:
         logging.warning("Running in debug mode! Console outputs may be large.")
 
     # Start the unit tests
     if args.test:
-        os.system("python -m unittest discover -s")
+        os.system("python -m unittest discover -s ./")
 
     # Handle the import and export arguments
     if args.importpath:
@@ -86,14 +86,14 @@ def solve_graph(importpath, exportpath=None):
     # Minimize the graph object
     logging.info('Minimizing graph...')
     start = time.perf_counter()
-    minimized_graph = logiccontroller.minimize_graph(graph)
+    minimized_graph = logiccontroller.minimize_graph_prim(graph)
     end = time.perf_counter()
     logging.info('Graph minimized in %.3f ms.', (end - start) * 1000)
 
     # If an export path was given, export the resulting graph
     if exportpath is not None:
         logging.info('Exporting graph to %s...', exportpath)
-        if filecontroller.export_graph_to_json(minimized_graph, exportpath):
+        if filecontroller.export_graph_to_file(minimized_graph, exportpath):
             logging.info('Successfully exported graph to %s', exportpath)
         else:
             exit(2)
