@@ -1,87 +1,103 @@
-import getopt
-import sys
+import argparse
+import logging
 import os
 import time
+
 from Controllers.FileController import FileController
 from Controllers.LogicController import LogicController
 
 
-def main(argv):
-    try:
-        # short options accept -h, -t or custom -i [path] (i:)
-        options, arguments = getopt.getopt(argv, "hti:e:", ["importpath=", "exportpath="])
-    except getopt.GetoptError:
-        print('[ERROR] Malformed arguments. Use -h to see help.\n')
-        sys.exit(2)
-    importpath = ""
-    exportpath = ""
-    for opt, arg in options:
-        argument = arg
-        if opt == '-h':
-            show_help()
-        elif opt == '-t':
-            test_modules()
-        elif opt in ("-i", "--ifile"):
-            importpath = argument
-        elif opt in ("-e", "--efile"):
-            exportpath = argument
-    # Check if import and export were selected
-    if importpath and exportpath:
-        solve_tree(importpath, exportpath)
-    elif importpath:
-        solve_tree(importpath)
+def main():
+    # Argument parser that handles the cli arguments
+    parser = argparse.ArgumentParser(
+        description='A program to minimize spanning trees.'
+    )
+
+    # Each argument is handled differently
+    parser.add_argument("-v", "--verbose",
+                        help="Show info messages while running",
+                        action="store_const",
+                        dest="loglevel",
+                        const=logging.INFO)
+    parser.add_argument("-d", "--debug",
+                        help="Show detailed debug messages while running",
+                        action="store_const",
+                        dest="loglevel",
+                        const=logging.DEBUG)
+    parser.add_argument("-t", "--test",
+                        help="Run all unit tests for this project",
+                        action="store_true")
+    parser.add_argument("-i", "--import",
+                        help="Import a graph from a file",
+                        action="store",
+                        dest="importpath")
+    parser.add_argument("-e", "--export",
+                        help="Export a graph to a file",
+                        action="store",
+                        dest="exportpath")
+
+    # Parse all passed arguments
+    args = parser.parse_args()
+
+    # Handle the log level
+    logging.basicConfig(format='[%(levelname)s] %(message)s', level=args.loglevel)
+    if args.loglevel == logging.DEBUG:
+        logging.warning("Running in debug mode! Console outputs may be large.")
+
+    # Start the unit tests
+    if args.test:
+        os.system("python -m unittest discover -s ./")
+
+    # Handle the import and export arguments
+    if args.importpath:
+        if args.exportpath:
+            solve_graph(args.importpath, args.exportpath)
+        else:
+            solve_graph(args.importpath)
+
+    # Assure that import was passed if export was passed
+    if args.exportpath:
+        if not args.importpath:
+            logging.error("--export requires --import! See -h for help.")
 
 
-# Imports a given file and solves it
-def solve_tree(inputpath, exportpath=None):
+def solve_graph(importpath, exportpath=None):
     filecontroller = FileController()
     logiccontroller = LogicController()
 
-    # Check if the paths are actual files
-    if not filecontroller.is_path_valid(inputpath):
-        print('[ERROR] The path \'', inputpath, '\' is not a valid path or the file does not exist.')
+    # If importpath is not valid, exit
+    if not filecontroller.is_path_valid(importpath):
         exit(2)
 
-    # import the file contents and deserialize into graph object
-    print("[DEBUG] Importing data from", inputpath, "...")
+    # Deserialize file contents into Models/Graph object
+    logging.info('Importing data from %s...', importpath)
     start = time.perf_counter()
-    graph = filecontroller.json_to_graph(inputpath)
+    graph = filecontroller.import_file_to_graph(importpath)
     end = time.perf_counter()
-    print("[DEBUG] Imported data in", end - start, " s")
+    logging.info('Imported %s Nodes, %s Edges in %.3f ms.', len(graph.nodes), len(graph.edges), (end - start) * 1000)
+
+    # Validate the imported data
+    logging.info('Validating imported data...')
+    start = time.perf_counter()
+    filecontroller.validate_imported_data(graph)
+    end = time.perf_counter()
+    logging.info('Validated data in %.3f ms.', (end - start) * 1000)
 
     # Minimize the graph object
-    print("[DEBUG] Minimizing graph...")
+    logging.info('Minimizing graph...')
     start = time.perf_counter()
-    logiccontroller.minimize(graph)
+    minimized_graph = logiccontroller.minimize_graph_prim(graph)
     end = time.perf_counter()
-    print("[DEBUG] Graph minimized in", end - start, "ms")
+    logging.info('Graph minimized in %.3f ms.', (end - start) * 1000)
 
     # If an export path was given, export the resulting graph
     if exportpath is not None:
-        if filecontroller.is_path_valid(exportpath):
-            filecontroller.graph_to_json(graph, exportpath)
+        logging.info('Exporting graph to %s...', exportpath)
+        if filecontroller.export_graph_to_file(minimized_graph, exportpath):
+            logging.info('Successfully exported graph to %s', exportpath)
         else:
-            print('[ERROR] The path \'', exportpath, '\' is not a valid path or the file does not exist. The file was '
-                                                     'not exported.')
+            exit(2)
 
 
-# Run all unit tests
-def test_modules():
-    os.system("python -m unittest")
-
-
-# No Arguments given
-# def default():
-
-
-# Show the help information
-def show_help():
-    print('[INFO] Usage:\n'
-          'Import a file\t\tpython main.py -i [inputfile]\n'
-          'Import a file and export\tpython main.py -ie [inputfile] [exportfile]\n'
-          'Run unit tests\t\tpython main.py -t\n')
-    sys.exit()
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+if __name__ == '__main__':
+    main()

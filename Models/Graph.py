@@ -1,16 +1,19 @@
-def graph():
-    class Graph:
-        def __init__(self, nodes, edges):
-            self.nodes = nodes
-            self.edges = edges
+class Graph:
+    def __init__(self, nodes=None, edges=None):
+        if nodes is None:
+            nodes = []
+        if edges is None:
+            edges = []
+        self.nodes = nodes
+        self.edges = edges
 
-    class Edge:
-        def __init__(self, source, destination, weight):
-            self.source = source
-            self.destination = destination
-            self.weight = weight
+    def find_node_by_id(self, needed_id):
+        for node in self.nodes:
+            if node.node_id == needed_id:
+                return node
+        return None
 
-    class Node:
-        def __init__(self, name, edges):
-            self.name = name
-            self.edges = edges
+    def find_node_by_name(self, name):
+        for node in self.nodes:
+            if name == node.name:
+                return node
