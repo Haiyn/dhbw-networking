@@ -86,7 +86,7 @@ def solve_graph(importpath, exportpath=None):
     # Minimize the graph object
     logging.info('Minimizing graph...')
     start = time.perf_counter()
-    minimized_graph = logiccontroller.minimize_graph_prim(graph)
+    minimized_graph = logiccontroller.minimize_graph(graph)
     end = time.perf_counter()
     logging.info('Graph minimized in %.3f ms.', (end - start) * 1000)
 

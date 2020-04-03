@@ -38,6 +38,5 @@ Following specifications must be regarded when importing:
 * Comments must start with `//`
 * Every definition must adhere to the maximum values set by the constants in `Controllers/FileController.py`
 
-Note: Edge duplicates will break the logic of the LogicController.
 
 [python-image]: https://img.shields.io/badge/python-v3.8.2+-brightgreen?style=flat-square&logo=python

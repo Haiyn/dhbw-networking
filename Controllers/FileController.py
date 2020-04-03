@@ -8,10 +8,10 @@ import re
 
 
 class FileController:
-    MAX_IDENT = 2       # Maximum length of the node identifier
-    MAX_ITEMS = 100     # Maximum number of imported items
-    MAX_COST = 30       # Maximum edge cost value
-    MAX_NODE_ID = 40    # Maximum node id value
+    MAX_IDENT = 2  # Maximum length of the node identifier
+    MAX_ITEMS = 100  # Maximum number of imported items
+    MAX_COST = 30  # Maximum edge cost value
+    MAX_NODE_ID = 40  # Maximum node id value
 
     # IS_PATH_VALID
     # Checks if the passed path is valid
@@ -104,32 +104,60 @@ class FileController:
     # @params: Graph object
     # @returns: None
     def validate_imported_data(self, graph):
-        # Assert that the node names are not longer than the global setting MAX_IDENT
-        # and that the node ids are not greater than the global setting MAX_NODE_ID
+        # Assert that all node definitions are valid
         for node in graph.nodes:
+            # Assert that the node names are not longer than the global setting MAX_IDENT
             if len(node.node_id) > self.MAX_IDENT:
                 logging.error("Node has a name longer than MAX_IDENT (%s): '%s' with Node ID %s",
                               self.MAX_IDENT, node.name, node.node_id)
                 exit(2)
+            # Assert that the node ids are not greater than the global setting MAX_NODE_ID
             if int(node.node_id) > self.MAX_NODE_ID:
                 logging.error("Node has an ID value greater than MAX_NODE_ID (%s): '%s' with Node ID %s",
                               self.MAX_NODE_ID, node.name, node.node_id)
                 exit(2)
+            if not graph.find_edges_for_node(node):
+                logging.error("Node has no edges that connect to it: '%s' with Node ID %s",
+                              node.name, node.node_id)
+                exit(2)
 
-        # Assert that every edge has a source and destination that exists
-        # and that the cost of every edge is not greater than the global setting MAX_COSTS
+        # Assert that all edge dfinitions are valid
         for edge in graph.edges:
+            # Assert that every edge has a source and destination that exists
             if graph.find_node_by_name(edge.frm) is None or graph.find_node_by_name(edge.to) is None:
                 logging.error("Edge references to a node that does not exist: '%s' to '%s' with cost '%s'",
                               edge.frm, edge.to, edge.cost)
                 exit(2)
+            # Assert that the cost of every edge is not greater than the global setting MAX_COSTS
             if edge.cost > self.MAX_COST:
                 logging.error("Edge has a cost value greater than MAX_COST: '%s' to '%s' with cost '%s'",
                               edge.frm, edge.to, edge.cost)
                 exit(2)
+            # Assert that there are no duplicate edges
+            for existing_edge in graph.edges:
+                if(edge.to == existing_edge.frm) and (edge.frm == existing_edge.to):
+                    logging.error("Edge has a disallowed duplicate: '%s' to '%s' with cost '%s'",
+                                  edge.frm, edge.to, edge.cost)
+                    exit(2)
+
+        # Assert that graph is connected
+        visited = [graph.nodes[0]]
+        logging.debug("Visited: %s", visited)
+        for node in visited:
+            edges = graph.find_edges_for_node(node)
+            for edge in edges:
+                if edge.to != node.name:
+                    next_node = graph.find_node_by_name(edge.to)
+                else:
+                    next_node = graph.find_node_by_name(edge.frm)
+                if next_node not in visited:
+                    visited.append(next_node)
+        if len(visited) < len(graph.nodes):
+            logging.error("Graph is not fully connected!")
+            exit(2)
 
     # EXPORT_GRAPH_TO_FILE
-    # Writes a Models/Graph object to a file
+    # Writes the result of the algorithm to a file
     #
     # @params: Models/Graph graph, String exportpath
     # @return: True if successful, False if invalid path or writing failed
@@ -139,12 +167,17 @@ class FileController:
         try:
             file = open(exportpath, 'w+')
             # Dump the contents of the graph object into the file
-            file.write("Graph Exported {\n")
+            file.write("Name\tID\tCost to Root\tNext Hop to Root\tBroadcast Count\n")
             for node in graph.nodes:
-                file.write("\t" + node.name + " = " + str(node.node_id) + ";\n")
-            for edge in graph.edges:
-                file.write("\t" + edge.frm + " - " + edge.to + " : " + str(edge.cost) + ";\n")
-            file.write("}\n")
+                if node.next_hop.cost == -1:
+                    next_hop = "Is Root"
+                else:
+                    next_hop = (node.next_hop.frm + "->" + node.next_hop.to + ": " + str(node.next_hop.cost))
+                file.write(node.name + "\t\t" +
+                           node.node_id + "\t" +
+                           str(node.cost) + "\t\t\t\t" +
+                           "%-15s" % next_hop + "\t\t" +
+                           str(node.count) + "\n")
             file.close()
             return True
         except IOError:

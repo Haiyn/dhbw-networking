@@ -17,3 +17,10 @@ class Graph:
         for node in self.nodes:
             if name == node.name:
                 return node
+
+    def find_edges_for_node(self, node):
+        edges = []
+        for edge in self.edges:
+            if (edge.to == node.name) or (edge.frm == node.name):
+                edges.append(edge)
+        return edges
