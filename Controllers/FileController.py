@@ -13,11 +13,9 @@ class FileController:
     MAX_COST = 30  # Maximum edge cost value
     MAX_NODE_ID = 40  # Maximum node id value
 
-    # IS_PATH_VALID
     # Checks if the passed path is valid
-    #
-    # @params: String path
-    # @return: True if valid, False if invalid
+    # @param String
+    # @return Boolean # True if valid, False if invalid
     @classmethod
     def is_path_valid(cls, path):
         # if path is empty, it is not a valid path
@@ -41,11 +39,9 @@ class FileController:
             print("[FATAL] Path is in an invalid type!")
             return False
 
-    # IMPORT_FILE_TO_GRAPH
-    # Decodes a text file into a Models/Graph object
-    #
-    # @params: String inputpath
-    # @return: Graph object
+    # Decodes a text file into a Graph object
+    # @param String
+    # @return Graph
     def import_file_to_graph(self, inputpath):
         with open(inputpath, 'r') as file:
             graph = Graph()
@@ -96,13 +92,10 @@ class FileController:
                 logging.debug('%s - %s: %s', edge.frm, edge.to, edge.cost)
 
             file.close()
-            return graph
+        return graph
 
-    # VALIDATE_IMPORTED_DATA
     # Validates the data with the set constants. Exits on invalidity
-    #
-    # @params: Graph object
-    # @returns: None
+    # @param Graph
     def validate_imported_data(self, graph):
         # Assert that all node definitions are valid
         for node in graph.nodes:
@@ -156,19 +149,17 @@ class FileController:
             logging.error("Graph is not fully connected!")
             exit(2)
 
-    # EXPORT_GRAPH_TO_FILE
     # Writes the result of the algorithm to a file
-    #
-    # @params: Models/Graph graph, String exportpath
-    # @return: True if successful, False if invalid path or writing failed
+    # @param Nodes List
+    # @return Boolean # True if successful, False if invalid path or writing failed
     @classmethod
-    def export_graph_to_file(cls, graph, exportpath):
+    def export_result_to_file(cls, result, exportpath):
         # Create a new file at given path, catch if not a valid path
         try:
             file = open(exportpath, 'w+')
             # Dump the contents of the graph object into the file
             file.write("Name\tID\tCost to Root\tNext Hop to Root\tBroadcast Count\n")
-            for node in graph.nodes:
+            for node in result:
                 if node.next_hop.cost == -1:
                     next_hop = "Is Root"
                 else:

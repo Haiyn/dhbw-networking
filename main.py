@@ -1,6 +1,5 @@
 import argparse
 import logging
-import os
 import time
 
 from Controllers.FileController import FileController
@@ -24,13 +23,11 @@ def main():
                         action="store_const",
                         dest="loglevel",
                         const=logging.DEBUG)
-    parser.add_argument("-t", "--test",
-                        help="Run all unit tests for this project",
-                        action="store_true")
     parser.add_argument("-i", "--import",
                         help="Import a graph from a file",
                         action="store",
-                        dest="importpath")
+                        dest="importpath",
+                        required=True)
     parser.add_argument("-e", "--export",
                         help="Export a graph to a file",
                         action="store",
@@ -44,10 +41,6 @@ def main():
     if args.loglevel == logging.DEBUG:
         logging.warning("Running in debug mode! Console outputs may be large.")
 
-    # Start the unit tests
-    if args.test:
-        os.system("python -m unittest discover -s ./")
-
     # Handle the import and export arguments
     if args.importpath:
         if args.exportpath:
@@ -55,12 +48,10 @@ def main():
         else:
             solve_graph(args.importpath)
 
-    # Assure that import was passed if export was passed
-    if args.exportpath:
-        if not args.importpath:
-            logging.error("--export requires --import! See -h for help.")
 
-
+# Controls the main function of importing and solving the graph
+# @param String
+# @param String|None # Only exports the result if argument is not None
 def solve_graph(importpath, exportpath=None):
     filecontroller = FileController()
     logiccontroller = LogicController()
@@ -86,14 +77,14 @@ def solve_graph(importpath, exportpath=None):
     # Minimize the graph object
     logging.info('Minimizing graph...')
     start = time.perf_counter()
-    minimized_graph = logiccontroller.minimize_graph(graph)
+    result = logiccontroller.minimize_graph(graph)
     end = time.perf_counter()
     logging.info('Graph minimized in %.3f ms.', (end - start) * 1000)
 
     # If an export path was given, export the resulting graph
     if exportpath is not None:
         logging.info('Exporting graph to %s...', exportpath)
-        if filecontroller.export_graph_to_file(minimized_graph, exportpath):
+        if filecontroller.export_result_to_file(result, exportpath):
             logging.info('Successfully exported graph to %s', exportpath)
         else:
             exit(2)
