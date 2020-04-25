@@ -1,11 +1,17 @@
 import logging
+from typing import List
+
+from Models.Graph import Graph
+from Models.Node import Node
 
 
 class LogicController:
-    # Minimizes the passed graph with the modified Bellman-Ford algorithm
-    # @param Graph
-    # @return Nodes List
     def minimize_graph(self, graph):
+        """
+        Minimizes the passed graph with the modified Bellman-Ford algorithm
+        :param graph: The graph to minimize
+        :returns: List<Node>: The result (all nodes with minimal weight to root etc)
+        """
         logging.debug('Starting modified Bellman-Ford algorithm with %s nodes and %s edges...',
                       len(graph.nodes), len(graph.edges))
 
@@ -17,10 +23,12 @@ class LogicController:
         self.print_result(graph.nodes)
         return graph.nodes
 
-    # Broadcasts a message (root_id and cost) to the neighboring nodes of curr_node
-    # @param Graph
-    # @param Node # the current node that is broadcasting
     def broadcast(self, graph, curr_node):
+        """
+        Broadcasts a message (root_id and cost) to the neighboring nodes of curr_node
+        :param graph: The graph in which the node sits
+        :param curr_node: The current broadcasting node
+        """
         logging.debug("Current node (%s = %s) is broadcasting...", curr_node.name, curr_node.root_id)
         # Broadcast cost and root_id to next node of every edge of the current node
         current_edges = graph.find_edges_for_node(curr_node)
@@ -58,10 +66,12 @@ class LogicController:
                               next_node.name, next_node.root_id, next_node.cost)
                 self.broadcast(graph, next_node)
 
-    # Print a passed graph in a very pretty way
-    # @param Graph
     @classmethod
     def print_result(cls, nodes):
+        """
+        Print passed nodes list in a very pretty way
+        :param nodes: The nodes to print
+        """
         logging.info("Nodes with smallest cost to root %s:", min(nodes, key=lambda x: x.node_id).name)
         print("Name\tID\tCost to Root\tNext Hop to Root\tBroadcast Count")
         nodes_str = ""

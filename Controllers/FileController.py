@@ -13,11 +13,13 @@ class FileController:
     MAX_COST = 30  # Maximum edge cost value
     MAX_NODE_ID = 40  # Maximum node id value
 
-    # Checks if the passed path is valid
-    # @param String
-    # @return Boolean # True if valid, False if invalid
     @classmethod
     def is_path_valid(cls, path):
+        """
+        Checks if the passed path is valid
+        :param path: The path to check
+        :return: Boolean: True on valid, false on invalid
+        """
         # if path is empty, it is not a valid path
         if path is None:
             return False
@@ -39,10 +41,12 @@ class FileController:
             print("[FATAL] Path is in an invalid type!")
             return False
 
-    # Decodes a text file into a Graph object
-    # @param String
-    # @return Graph
     def import_file_to_graph(self, inputpath):
+        """
+        Decodes a text file into a Graph object
+        :param inputpath: path to definition file
+        :return: graph: Imported Graph object
+        """
         with open(inputpath, 'r') as file:
             graph = Graph()
             entries = 0
@@ -94,9 +98,11 @@ class FileController:
             file.close()
         return graph
 
-    # Validates the data with the set constants. Exits on invalidity
-    # @param Graph
     def validate_imported_data(self, graph):
+        """
+        Validates the data with the set constants. Exits on invalidity
+        :param graph: Graph to validate
+        """
         # Assert that all node definitions are valid
         for node in graph.nodes:
             # Assert that the node names are not longer than the global setting MAX_IDENT
@@ -136,6 +142,7 @@ class FileController:
         # Assert that graph is connected
         visited = [graph.nodes[0]]
         logging.debug("Visited: %s", visited)
+        # Start at one node and add every reachable node from there (repeat for every reachable node)
         for node in visited:
             edges = graph.find_edges_for_node(node)
             for edge in edges:
@@ -145,15 +152,19 @@ class FileController:
                     next_node = graph.find_node_by_name(edge.frm)
                 if next_node not in visited:
                     visited.append(next_node)
+        # If all reachable, visited nodes are less than all nodes in the graph, the graph is not fully connected
         if len(visited) < len(graph.nodes):
             logging.error("Graph is not fully connected!")
             exit(2)
 
-    # Writes the result of the algorithm to a file
-    # @param Nodes List
-    # @return Boolean # True if successful, False if invalid path or writing failed
     @classmethod
     def export_result_to_file(cls, result, exportpath):
+        """
+        Writes the result of the algorithm to a file
+        :param result: Nodes List to export
+        :param exportpath: True if successful, False if invalid path or writing failed
+        :return:
+        """
         # Create a new file at given path, catch if not a valid path
         try:
             file = open(exportpath, 'w+')

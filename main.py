@@ -49,10 +49,12 @@ def main():
             solve_graph(args.importpath)
 
 
-# Controls the main function of importing and solving the graph
-# @param String
-# @param String|None # Only exports the result if argument is not None
 def solve_graph(importpath, exportpath=None):
+    """
+    Controls the main function of importing and solving the graph
+    :param importpath: path to file to import
+    :param exportpath: path to file to export, can be None if not given as parameter in console
+    """
     filecontroller = FileController()
     logiccontroller = LogicController()
 
