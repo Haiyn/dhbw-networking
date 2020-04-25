@@ -1,0 +1,7 @@
+Name	ID	Cost to Root	Next Hop to Root	Broadcast Count
+A		5	10				A->B: 10       		2
+B		1	0				Is Root        		1
+C		3	15				C->D: 3        		4
+D		7	12				D->E: 2        		4
+E		6	10				B->E: 10       		4
+F		4	12				E->F: 2        		4
